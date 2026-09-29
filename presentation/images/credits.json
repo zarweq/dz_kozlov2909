@@ -1,0 +1,104 @@
+{
+ "router": {
+  "file": "File:Cisco 2800 series router (1).jpg",
+  "license": "CC BY 2.0",
+  "artist": "Robert",
+  "url": "https://commons.wikimedia.org/wiki/File:Cisco_2800_series_router_(1).jpg"
+ },
+ "switch": {
+  "file": "File:Ccna security lab.JPG",
+  "license": "CC BY-SA 3.0",
+  "artist": "Axel Dux",
+  "url": "https://commons.wikimedia.org/wiki/File:Ccna_security_lab.JPG"
+ },
+ "pc": {
+  "file": "File:20150214-20150219최광모C36.JPG",
+  "license": "CC BY-SA 4.0",
+  "artist": "최광모",
+  "url": "https://commons.wikimedia.org/wiki/File:20150214-20150219%EC%B5%9C%EA%B4%91%EB%AA%A8C36.JPG"
+ },
+ "server": {
+  "file": "File:HP ProLiant DL360 and two DL380.jpg",
+  "license": "CC BY 2.0",
+  "artist": "Robert",
+  "url": "https://commons.wikimedia.org/wiki/File:HP_ProLiant_DL360_and_two_DL380.jpg"
+ },
+ "mfp": {
+  "file": "File:HP Color LaserJet CM1312nfi Multifunction Printer.jpg",
+  "license": "CC BY-SA 4.0",
+  "artist": "Sgroey",
+  "url": "https://commons.wikimedia.org/wiki/File:HP_Color_LaserJet_CM1312nfi_Multifunction_Printer.jpg"
+ },
+ "rack": {
+  "file": "File:Racksserver.png",
+  "license": "CC BY-SA 3.0",
+  "artist": "Racksserver",
+  "url": "https://commons.wikimedia.org/wiki/File:Racksserver.png"
+ },
+ "ups": {
+  "file": "File:Apc ups rs500 07.jpg",
+  "license": "CC BY-SA 3.0",
+  "artist": "Hundehalter",
+  "url": "https://commons.wikimedia.org/wiki/File:Apc_ups_rs500_07.jpg"
+ },
+ "cable": {
+  "file": "File:10baseT cable.jpeg",
+  "license": "Public domain",
+  "artist": "Dflock",
+  "url": "https://commons.wikimedia.org/wiki/File:10baseT_cable.jpeg"
+ },
+ "rj45": {
+  "file": "File:8P8C modular plugs (1).JPG",
+  "license": "CC BY-SA 3.0",
+  "artist": "CyberXRef",
+  "url": "https://commons.wikimedia.org/wiki/File:8P8C_modular_plugs_(1).JPG"
+ },
+ "boot": {
+  "file": "File:10baseT jack.png",
+  "license": "Public domain",
+  "artist": "Dflock at English Wikipedia\n\nLater versions were uploaded by Zcrayfish at en.wikipedia.",
+  "url": "https://commons.wikimedia.org/wiki/File:10baseT_jack.png"
+ },
+ "panel": {
+  "file": "File:19\" patchpanel for up to 24 keystone modules.jpg",
+  "license": "CC BY-SA 4.0",
+  "artist": "Phiarc",
+  "url": "https://commons.wikimedia.org/wiki/File:19%22_patchpanel_for_up_to_24_keystone_modules.jpg"
+ },
+ "socket": {
+  "file": "File:RJ45-wall.jpg",
+  "license": "Public domain",
+  "artist": "NzW at  Wikipedia",
+  "url": "https://commons.wikimedia.org/wiki/File:RJ45-wall.jpg"
+ },
+ "duct": {
+  "file": "File:Angular trunking accessories.JPG",
+  "license": "Public domain",
+  "artist": "Leotard",
+  "url": "https://commons.wikimedia.org/wiki/File:Angular_trunking_accessories.JPG"
+ },
+ "cord": {
+  "file": "File:232x174 RJ-45 patchcord.png",
+  "license": "CC BY-SA 3.0",
+  "artist": "Mlewis000 (talk) (Uploads)",
+  "url": "https://commons.wikimedia.org/wiki/File:232x174_RJ-45_patchcord.png"
+ },
+ "console": {
+  "file": "File:CiscoConsoleCable.jpg",
+  "license": "CC BY-SA 4.0",
+  "artist": "Pries",
+  "url": "https://commons.wikimedia.org/wiki/File:CiscoConsoleCable.jpg"
+ },
+ "crimp": {
+  "file": "File:Cable stripper, cable tester (RJ45, RJ11), LSA-Tool and crimping tool.jpg",
+  "license": "CC BY 4.0",
+  "artist": "www.heimnetzwerke.net",
+  "url": "https://commons.wikimedia.org/wiki/File:Cable_stripper,_cable_tester_(RJ45,_RJ11),_LSA-Tool_and_crimping_tool.jpg"
+ },
+ "ties": {
+  "file": "File:Cable ties.jpg",
+  "license": "CC BY-SA 3.0",
+  "artist": "Silverxxx (talk)\n\nOriginal uploader was Silverxxx at en.wikipedia",
+  "url": "https://commons.wikimedia.org/wiki/File:Cable_ties.jpg"
+ }
+}

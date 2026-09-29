@@ -226,31 +226,54 @@ const eqTotal = sum(equipment), csTotal = sum(consumables), total = eqTotal + cs
     blk(5.15, "SW-BUH / SW-SALES / SW-IT", C.it, ["vlan 10          ! 20 / 30", " name BUH", "interface fa0/24", " switchport mode trunk", "interface range fa0/1 - 23", " switchport mode access", " switchport access vlan 10", " spanning-tree portfast", "interface vlan 99", " ip address 192.168.99.3 ...", "ip default-gateway 192.168.99.1"].join("\n"));
   }
 
-  // 8. Equipment
+  // photo helper: fit image into box (contain)
+  const IMG_DIR = require("path").join(__dirname, "images");
+  const credits = JSON.parse(fs.readFileSync(require("path").join(IMG_DIR, "credits.json"), "utf8"));
+  const photo = async (s, key, x, y, w, h) => {
+    const f = require("path").join(IMG_DIR, key + ".jpg");
+    const m = await sharp(f).metadata();
+    let iw = w, ih = (m.height / m.width) * w;
+    if (ih > h) { ih = h; iw = (m.width / m.height) * h; }
+    s.addImage({ path: f, x: x + (w - iw) / 2, y: y + (h - ih) / 2, w: iw, h: ih });
+  };
+
+  // 8. Equipment (cards with photos)
   {
     const s = light(); title(s, "Закупка оборудования", "Ориентировочные цены, 2026 г.");
-    const hdr = ["Наименование", "Кол-во", "Цена", "Сумма"].map((t, i) => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.navy }, align: i ? "right" : "left" } }));
+    const keys = ["router", "switch", "pc", "server", "mfp", "rack", "ups"];
     const cols = [C.navy, C.core, C.sales, C.srv, C.it, C.buh, C.core];
-    const rows = equipment.map(([n, q, p], i) => [
-      { text: n, options: { bold: true, color: cols[i] } },
-      { text: String(q), options: { align: "right" } },
-      { text: rub(p), options: { align: "right" } },
-      { text: rub(q * p), options: { align: "right", bold: true } }]);
-    rows.push([{ text: "Итого оборудование", options: { bold: true, color: C.white, fill: { color: C.core }, colspan: 3 } }, { text: rub(eqTotal), options: { bold: true, color: C.white, fill: { color: C.core }, align: "right" } }]);
-    s.addTable([hdr, ...rows], { x: 0.5, y: 1.35, w: 9, colW: [5.3, 0.9, 1.3, 1.5], fontFace: FONT_B, fontSize: 12, color: C.ink, border: { type: "solid", color: C.line, pt: 0.75 }, rowH: 0.4, valign: "middle", fill: { color: C.white } });
+    for (let i = 0; i < equipment.length; i++) {
+      const [n, q, p] = equipment[i];
+      const x = 0.5 + (i % 4) * 2.3, y = 1.3 + Math.floor(i / 4) * 2.05;
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: 2.1, h: 1.9, fill: { color: C.bg }, line: { color: C.bg }, rectRadius: 0.08, shadow: shadow() });
+      await photo(s, keys[i], x + 0.1, y + 0.08, 1.9, 0.85);
+      s.addText(n, { x: x + 0.1, y: y + 0.97, w: 1.9, h: 0.5, fontFace: FONT_B, fontSize: 9.5, bold: true, color: cols[i], margin: 0, valign: "top", isTextBox: true });
+      s.addText([{ text: `${q} × ${rub(p)}`, options: { color: C.muted } }, { text: "   " + rub(q * p), options: { bold: true, color: C.ink } }],
+        { x: x + 0.1, y: y + 1.5, w: 1.9, h: 0.3, fontFace: FONT_B, fontSize: 10, margin: 0, valign: "middle", isTextBox: true });
+    }
+    const x = 0.5 + 3 * 2.3, y = 1.3 + 2.05;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: 2.1, h: 1.9, fill: { color: C.core }, line: { color: C.core }, rectRadius: 0.08 });
+    s.addText("Итого\nоборудование", { x: x + 0.15, y: y + 0.2, w: 1.8, h: 0.7, fontFace: FONT_B, fontSize: 14, color: C.white, margin: 0, isTextBox: true });
+    s.addText(rub(eqTotal), { x: x + 0.15, y: y + 1.0, w: 1.8, h: 0.6, fontFace: FONT_H, fontSize: 22, bold: true, color: C.white, margin: 0, isTextBox: true });
   }
 
-  // 9. Consumables
+  // 9. Consumables (cards with photos)
   {
     const s = light(); title(s, "Расходные материалы", "Для прокладки СКС и подключения рабочих мест");
-    const hdr = ["Наименование", "Кол-во", "Цена", "Сумма"].map((t, i) => ({ text: t, options: { bold: true, color: C.white, fill: { color: C.buh }, align: i ? "right" : "left" } }));
-    const rows = consumables.map(([n, q, p], i) => [
-      { text: n, options: { fill: { color: i % 2 ? C.white : C.bg } } },
-      { text: String(q), options: { align: "right", fill: { color: i % 2 ? C.white : C.bg } } },
-      { text: rub(p), options: { align: "right", fill: { color: i % 2 ? C.white : C.bg } } },
-      { text: rub(q * p), options: { align: "right", bold: true, fill: { color: i % 2 ? C.white : C.bg } } }]);
-    rows.push([{ text: "Итого расходные материалы", options: { bold: true, color: C.white, fill: { color: C.navy }, colspan: 3 } }, { text: rub(csTotal), options: { bold: true, color: C.white, fill: { color: C.navy }, align: "right" } }]);
-    s.addTable([hdr, ...rows], { x: 0.5, y: 1.3, w: 9, colW: [5.3, 0.9, 1.3, 1.5], fontFace: FONT_B, fontSize: 11, color: C.ink, border: { type: "solid", color: C.line, pt: 0.5 }, rowH: 0.31, valign: "middle" });
+    const keys = ["cable", "rj45", "boot", "panel", "socket", "duct", "cord", "console", "crimp", "ties"];
+    for (let i = 0; i < consumables.length; i++) {
+      const [n, q, p] = consumables[i];
+      const x = 0.5 + (i % 3) * 3.05, y = 1.35 + Math.floor(i / 3) * 1.0;
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: 2.9, h: 0.93, fill: { color: C.bg }, line: { color: C.bg }, rectRadius: 0.08, shadow: shadow() });
+      await photo(s, keys[i], x + 0.08, y + 0.08, 0.95, 0.77);
+      s.addText(n, { x: x + 1.12, y: y + 0.08, w: 1.7, h: 0.5, fontFace: FONT_B, fontSize: 9, color: C.ink, margin: 0, valign: "top", isTextBox: true });
+      s.addText([{ text: `${q} × ${rub(p)}`, options: { color: C.muted } }, { text: "  " + rub(q * p), options: { bold: true, color: C.buh } }],
+        { x: x + 1.12, y: y + 0.6, w: 1.75, h: 0.25, fontFace: FONT_B, fontSize: 9, margin: 0, valign: "middle", isTextBox: true });
+    }
+    const x = 0.5 + 1 * 3.05, y = 1.35 + 3 * 1.0;
+    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: 5.95, h: 0.93, fill: { color: C.navy }, line: { color: C.navy }, rectRadius: 0.08 });
+    s.addText("Итого расходные материалы", { x: x + 0.25, y, w: 3.4, h: 0.93, fontFace: FONT_B, fontSize: 15, color: C.white, margin: 0, valign: "middle", isTextBox: true });
+    s.addText(rub(csTotal), { x: x + 3.6, y, w: 2.1, h: 0.93, fontFace: FONT_H, fontSize: 22, bold: true, color: C.white, align: "right", margin: 0, valign: "middle", isTextBox: true });
   }
 
   // 10. Budget
@@ -310,6 +333,26 @@ const eqTotal = sum(equipment), csTotal = sum(consumables), total = eqTotal + cs
       circle(s, img, c, 0.6, 1.55 + i * 0.9, 0.6);
       s.addText(t, { x: 1.4, y: 1.55 + i * 0.9, w: 8, h: 0.6, fontFace: FONT_B, fontSize: 16, color: C.white, margin: 0, valign: "middle", isTextBox: true });
     });
+  }
+
+  // 13. Image credits
+  {
+    const s = light(); title(s, "Источники изображений", "Фотографии оборудования — Wikimedia Commons, свободные лицензии");
+    const labels = { router: "Маршрутизатор", switch: "Коммутаторы", pc: "Рабочая станция", server: "Сервер", mfp: "МФУ", rack: "Шкаф", ups: "ИБП",
+      cable: "Кабель UTP", rj45: "Коннекторы RJ-45", boot: "Колпачки", panel: "Патч-панель", socket: "Розетка RJ-45", duct: "Кабель-канал",
+      cord: "Патч-корд", console: "Консольный кабель", crimp: "Кримпер и тестер", ties: "Стяжки" };
+    const clean = (t) => t.replace(/\s+/g, " ").replace(/Original uploader.*$/i, "").replace(/Later versi.*$/i, "").trim().slice(0, 40);
+    const items = Object.keys(labels).map((k) => [
+      { text: labels[k] + ": ", options: { bold: true, color: C.navy } },
+      { text: `${credits[k].file.replace(/^File:/, "")} — ${clean(credits[k].artist)}, ${credits[k].license}`, options: { color: C.ink } },
+    ]);
+    const half = Math.ceil(items.length / 2);
+    [items.slice(0, half), items.slice(half)].forEach((col, ci) => {
+      const runs = [];
+      col.forEach((it, i) => { runs.push(it[0]); runs.push({ ...it[1], options: { ...it[1].options, breakLine: i < col.length - 1 } }); });
+      s.addText(runs, { x: 0.5 + ci * 4.6, y: 1.35, w: 4.4, h: 3.3, fontFace: FONT_B, fontSize: 8.5, margin: 0, valign: "top", paraSpaceAfter: 4, isTextBox: true });
+    });
+    s.addText("Страница каждого файла: commons.wikimedia.org/wiki/File:<имя файла>", { x: 0.5, y: 4.9, w: 9, h: 0.3, fontFace: FONT_B, fontSize: 10, italic: true, color: C.muted, margin: 0, isTextBox: true });
   }
 
   await pres.writeFile({ fileName: OUT });
