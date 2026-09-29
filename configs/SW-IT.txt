@@ -1,0 +1,27 @@
+enable
+configure terminal
+hostname SW-IT
+no ip domain-lookup
+enable secret cisco
+vlan 30
+ name IT
+vlan 99
+ name SERVERS
+ exit
+interface FastEthernet0/24
+ description UPLINK-SW-CORE
+ switchport mode trunk
+ exit
+interface range FastEthernet0/1 - 23
+ description USERS-IT
+ switchport mode access
+ switchport access vlan 30
+ spanning-tree portfast
+ exit
+interface vlan 99
+ ip address 192.168.99.5 255.255.255.0
+ no shutdown
+ exit
+ip default-gateway 192.168.99.1
+end
+write memory

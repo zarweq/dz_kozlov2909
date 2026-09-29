@@ -1,0 +1,35 @@
+enable
+configure terminal
+hostname SW-CORE
+no ip domain-lookup
+enable secret cisco
+vlan 10
+ name BUH
+vlan 20
+ name SALES
+vlan 30
+ name IT
+vlan 99
+ name SERVERS
+ exit
+interface GigabitEthernet0/1
+ description UPLINK-R1
+ switchport mode trunk
+ exit
+interface range FastEthernet0/1 , FastEthernet0/3 , FastEthernet0/5
+ description TO-ACCESS-SWITCHES
+ switchport mode trunk
+ exit
+interface FastEthernet0/13
+ description SERVER
+ switchport mode access
+ switchport access vlan 99
+ spanning-tree portfast
+ exit
+interface vlan 99
+ ip address 192.168.99.2 255.255.255.0
+ no shutdown
+ exit
+ip default-gateway 192.168.99.1
+end
+write memory

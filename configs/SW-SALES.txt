@@ -1,0 +1,27 @@
+enable
+configure terminal
+hostname SW-SALES
+no ip domain-lookup
+enable secret cisco
+vlan 20
+ name SALES
+vlan 99
+ name SERVERS
+ exit
+interface FastEthernet0/24
+ description UPLINK-SW-CORE
+ switchport mode trunk
+ exit
+interface range FastEthernet0/1 - 23
+ description USERS-SALES
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+ exit
+interface vlan 99
+ ip address 192.168.99.4 255.255.255.0
+ no shutdown
+ exit
+ip default-gateway 192.168.99.1
+end
+write memory
