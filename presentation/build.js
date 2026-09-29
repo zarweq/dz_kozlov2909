@@ -257,6 +257,92 @@ const eqTotal = sum(equipment), csTotal = sum(consumables), total = eqTotal + cs
     s.addText(rub(eqTotal), { x: x + 0.15, y: y + 1.0, w: 1.8, h: 0.6, fontFace: FONT_H, fontSize: 22, bold: true, color: C.white, margin: 0, isTextBox: true });
   }
 
+  // 8b. One slide per equipment item
+  {
+    const details = [
+      { key: "router", color: C.navy, role: "Маршрутизатор", does: [
+          ["Соединяет отделы", "маршрутизирует трафик между VLAN 10, 20, 30 и 99 — без него отделы не видят друг друга"],
+          ["Раздаёт адреса", "DHCP-сервер: автоматически выдаёт IP, шлюз и DNS всем 9 компьютерам"],
+          ["Шлюз по умолчанию", "адрес .1 в каждой сети — через него ПК выходят за пределы своего отдела"],
+          ["Выход наружу", "свободные порты G0/1 и G0/2 — для подключения провайдера и интернета"]],
+        specs: ["3 × Gigabit Ethernet", "4 слота EHWIC", "Серия ISR G2"],
+        net: "R1 · порт G0/0 → SW-CORE · подынтерфейсы G0/0.10, .20, .30, .99" },
+      { key: "switch", color: C.core, role: "Коммутатор", does: [
+          ["Подключает устройства", "24 порта для ПК, принтеров и сервера, ещё 2 гигабитных порта для связи с ядром"],
+          ["Разделяет отделы", "VLAN изолируют трафик бухгалтерии, продаж и IT на одном оборудовании"],
+          ["Передаёт VLAN дальше", "trunk-каналы 802.1Q несут трафик всех отделов по одному кабелю"],
+          ["Управляется удалённо", "у каждого коммутатора свой IP в VLAN 99 для настройки и мониторинга"]],
+        specs: ["24 × Fast Ethernet", "2 × Gigabit uplink", "Управляемый L2"],
+        net: "SW-CORE — ядро сети; SW-BUH, SW-SALES, SW-IT — по одному в каждом отделе" },
+      { key: "pc", color: C.sales, role: "Рабочая станция", does: [
+          ["Рабочее место сотрудника", "учёт и отчётность в бухгалтерии, работа с клиентами в продажах, администрирование в IT"],
+          ["Автоматическая настройка", "при включении получает IP-адрес по DHCP от маршрутизатора R1"],
+          ["Доступ к сервисам", "открывает файлы и внутренний портал на сервере, печатает на МФУ отдела"],
+          ["Запас по мощности", "Core i5, 16 ГБ и SSD хватит на офисные программы на 5+ лет"]],
+        specs: ["Core i5 / 16 ГБ", "SSD 512 ГБ", "Монитор 24\""],
+        net: "PC1–PC3 — бухгалтерия, PC4–PC6 — продажи, PC7–PC9 — IT-отдел" },
+      { key: "server", color: C.srv, role: "Сервер", does: [
+          ["Хранит данные", "общие папки отделов и документы в одном защищённом месте"],
+          ["DNS", "переводит имена сайтов и сервисов в IP-адреса для всех компьютеров офиса"],
+          ["Внутренний веб-портал", "HTTP-сервер для новостей, инструкций и заявок сотрудников"],
+          ["Резервные копии", "ночные бэкапы данных — защита от потери информации"]],
+        specs: ["Стоечный 1U", "Intel Xeon E-2300", "ECC-память"],
+        net: "SERVER · 192.168.99.10 · VLAN 99 · порт SW-CORE Fa0/13" },
+      { key: "mfp", color: C.it, role: "МФУ", does: [
+          ["Печать", "сетевой лазерный принтер общий для всех сотрудников отдела"],
+          ["Сканирование", "сканирует документы сразу в папку отдела на сервере"],
+          ["Копирование", "копии договоров и отчётов без отдельного копира"],
+          ["Сетевое подключение", "подключается в свободный порт коммутатора и попадает в VLAN своего отдела"]],
+        specs: ["Лазерная печать", "Сканер + копир", "Ethernet"],
+        net: "По одному МФУ на отдел: к SW-BUH, SW-SALES и SW-IT" },
+      { key: "rack", color: C.buh, role: "Серверный шкаф", does: [
+          ["Размещает оборудование", "R1, SW-CORE, сервер, патч-панель и ИБП в одном месте"],
+          ["Защищает", "запирается на ключ — к оборудованию нет доступа у посторонних"],
+          ["Охлаждает", "перфорированные двери и место для вентиляторов отводят тепло"],
+          ["Упорядочивает кабели", "кабели от розеток приходят на патч-панель, дальше — короткие патч-корды"]],
+        specs: ["19 дюймов", "18U", "Замок + вентиляция"],
+        net: "Занято около 7U из 18U — остаётся запас под расширение" },
+      { key: "ups", color: C.core, role: "Источник бесперебойного питания", does: [
+          ["Защищает от отключений", "при пропадании света питает оборудование от батарей"],
+          ["Стабилизирует напряжение", "AVR выравнивает скачки и просадки в электросети"],
+          ["Корректное выключение", "даёт время сохранить данные и выключить сервер без потерь"],
+          ["Бережёт технику", "фильтрует помехи и продлевает жизнь блокам питания"]],
+        specs: ["1500 ВА / 1000 Вт", "Стабилизатор AVR", "Для стойки"],
+        net: "Питает ядро сети: R1, SW-CORE и сервер" },
+    ];
+    for (let i = 0; i < details.length; i++) {
+      const d = details[i], [name, q, p] = equipment[i];
+      const s = light();
+      s.addText(`Оборудование ${i + 1} из ${details.length}`, { x: 0.5, y: 0.28, w: 4, h: 0.25, fontFace: FONT_B, fontSize: 11, bold: true, color: d.color, margin: 0, isTextBox: true });
+      s.addText(d.role, { x: 0.5, y: 0.52, w: 9, h: 0.55, fontFace: FONT_H, fontSize: 28, bold: true, color: C.navy, margin: 0, isTextBox: true });
+      s.addText(name, { x: 0.5, y: 1.05, w: 9, h: 0.3, fontFace: FONT_B, fontSize: 13, color: C.muted, margin: 0, isTextBox: true });
+      // photo card
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.5, y: 1.5, w: 4.1, h: 2.75, fill: { color: C.bg }, line: { color: C.bg }, rectRadius: 0.1, shadow: shadow() });
+      await photo(s, d.key, 0.65, 1.62, 3.8, 2.5);
+      // price chip
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 0.5, y: 4.4, w: 4.1, h: 0.85, fill: { color: d.color }, line: { color: d.color }, rectRadius: 0.1 });
+      s.addText(`${q} шт. × ${rub(p)}`, { x: 0.7, y: 4.4, w: 2.0, h: 0.85, fontFace: FONT_B, fontSize: 13, color: C.white, margin: 0, valign: "middle", isTextBox: true });
+      s.addText(rub(q * p), { x: 2.5, y: 4.4, w: 1.95, h: 0.85, fontFace: FONT_H, fontSize: 22, bold: true, color: C.white, align: "right", margin: 0, valign: "middle", isTextBox: true });
+      // what it does
+      s.addText("Что делает", { x: 5.0, y: 1.45, w: 4.5, h: 0.3, fontFace: FONT_H, fontSize: 15, bold: true, color: C.navy, margin: 0, isTextBox: true });
+      d.does.forEach(([h, t], k) => {
+        const y = 1.82 + k * 0.6;
+        s.addShape(pres.shapes.OVAL, { x: 5.0, y: y + 0.05, w: 0.14, h: 0.14, fill: { color: d.color }, line: { color: d.color } });
+        s.addText([{ text: h + ": ", options: { bold: true, color: C.ink } }, { text: t, options: { color: C.ink } }],
+          { x: 5.25, y, w: 4.25, h: 0.55, fontFace: FONT_B, fontSize: 10.5, margin: 0, valign: "top", isTextBox: true });
+      });
+      // specs chips
+      d.specs.forEach((t, k) => {
+        s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 5.0 + k * 1.5, y: 4.27, w: 1.4, h: 0.32, fill: { color: C.bg }, line: { color: d.color, width: 1 }, rectRadius: 0.08 });
+        s.addText(t, { x: 5.0 + k * 1.5, y: 4.27, w: 1.4, h: 0.32, fontFace: FONT_B, fontSize: 9, bold: true, color: C.ink, align: "center", valign: "middle", margin: 0, isTextBox: true });
+      });
+      // role in our network
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 5.0, y: 4.7, w: 4.5, h: 0.55, fill: { color: C.navy }, line: { color: C.navy }, rectRadius: 0.08 });
+      s.addText([{ text: "В нашей сети: ", options: { bold: true, color: "CADCFC" } }, { text: d.net, options: { color: C.white } }],
+        { x: 5.15, y: 4.7, w: 4.25, h: 0.55, fontFace: FONT_B, fontSize: 9.5, margin: 0, valign: "middle", isTextBox: true });
+    }
+  }
+
   // 9. Consumables (cards with photos)
   {
     const s = light(); title(s, "Расходные материалы", "Для прокладки СКС и подключения рабочих мест");
